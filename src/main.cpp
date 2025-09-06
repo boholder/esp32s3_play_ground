@@ -1,8 +1,13 @@
 #include <Arduino.h>
-void setup() {
-// write your initialization code here
+#include "demo_fastled.h"
+
+
+void setup()
+{
+    init_fastled();
 }
 
-void loop() {
-// write your code here
+void loop()
+{
+    fastled();
 }
