@@ -4,7 +4,7 @@ CRGB leds[NUM_LEDS];
 
 void init_fastled()
 {
-    FastLED.addLeds<WS2812, LED_PIN, GRB>(leds, NUM_LEDS);
+    CFastLED::addLeds<WS2812, LED_PIN, GRB>(leds, NUM_LEDS);
 }
 
 void fastled()

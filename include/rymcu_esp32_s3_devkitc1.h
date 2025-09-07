@@ -1,0 +1,6 @@
+#ifndef RYMCU_ESP32_S3_DEVKITC1_H
+#define RYMCU_ESP32_S3_DEVKITC1_H
+
+#define LED_D3_PIN 18 // 主板上有个额外的LED灯，标为D3，根据电路图得知，与GPIO18连接
+
+#endif //RYMCU_ESP32_S3_DEVKITC1_H

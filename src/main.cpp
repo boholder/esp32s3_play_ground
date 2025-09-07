@@ -1,13 +1,16 @@
 #include <Arduino.h>
-#include "demo_fastled.h"
+#include "rymcu_esp32_s3_devkitc1.h"
 
 
 void setup()
 {
-    init_fastled();
+    pinMode(LED_D3_PIN, OUTPUT);
 }
 
 void loop()
 {
-    fastled();
+    digitalWrite(LED_D3_PIN, HIGH);
+    delay(1000);
+    digitalWrite(LED_D3_PIN, LOW);
+    delay(1000);
 }
