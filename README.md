@@ -11,3 +11,11 @@ I'm using Windows 10, [this answer](https://stackoverflow.com/a/77934154/2309308
 
 PS: You might need to install [esp-idf](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/get-started/windows-setup.html) first to install the `USB JTAG/serial debug unit (Interface 2)` driver.
 PPS: For installing esp-idf, download offline installer from [GitHub](https://github.com/espressif/idf-installer/releases/) is way faster than using online installer.
+
+## Once you use pioarduino espressif32
+
+Install it with `platform = https://github.com/pioarduino/platform-espressif32/releases/download/stable/platform-espressif32.zip` in `platformio.ini` for Arduino 3.x support.
+
+> Even if go back to `platform = espressif32`, pio still use pioarduino's framework. It (`platform = espressif32`) takes its place as the “highest installed platform version”. If you want to go back to PlatformIO’s (outdated) espressif32 version, you would have to specify them by version number. e.g., `platform = espressif32@6.11.0`.
+> 
+> -- https://community.platformio.org/t/bb-spi-lcd-missing-esp-psram-h/48019/10
