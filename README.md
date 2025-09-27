@@ -25,7 +25,49 @@ Install it with `platform = https://github.com/pioarduino/platform-espressif32/r
 After struggly figuring out that:
 
 - [`pioarduino/platform-espressif32` is unhappy with Windows](https://github.com/pioarduino/platform-espressif32/issues/289#issuecomment-3288609760) (inner uv error: `Error: Failed to install Python dependencies into penv`)
-- CLion on Windows [can't use platformio-core in WSL](https://youtrack.jetbrains.com/issue/CPP-46558/CLion-on-Windows-cant-use-platformio-core-in-WSL) with (JB's) official platformio plugin
+- CLion on Windows [can't use platformio-core in WSL](https://youtrack.jetbrains.com/issue/CPP-46558/CLion-on-Windows-cant-use-platformio-core-in-WSL) with (JB's official) platformio plugin
 - `lvgl` library doesn't work (without twisted) with MSYS2 [[1]](https://github.com/lvgl/lv_platformio/issues/60) [[2]](https://github.com/lvgl/lv_platformio/issues/75)
 
-I decide to move everything (platformio-core, CLion, project files) into WSL2 and "remote develop" with JetBrains Gateway. Now everyone (me included) except my old laptop is happy and `platformio-core` can successfully reloads config (`pio project config`, `pio project metadata`) and builds project (`pio run`). Yes, the performance of CLion under WSL2 is terrible, hope JB developers can fix the plugin issue quickly.
+I decide to move everything (platformio-core, CLion, project files) into WSL2 and "remote develop" with JetBrains Gateway. Now everyone (me included) except my old laptop is happy and `platformio-core` can successfully reload config (`pio project config`, `pio project metadata`) and builds project (`pio run`). Yes, the performance of CLion under WSL2 is terrible, hope JB developers can fix the plugin issue quickly.
+
+[Let WSL2 use Windows's USB device](https://learn.microsoft.com/en-us/windows/wsl/connect-usb) is hard (as expected). I'll list all steps here for others who need:
+
+**Change `/etc/wsl.conf` to let WSL2 init with `systemd`**
+
+```ini
+[boot]
+systemd=true
+```
+
+You can choose not to use `systemd` for shorter start-up time, but you need to try to accomplish steps below with other methods since config files under `/etc/foo.d/bar.rule/conf` won't be loaded on start-up. One method is adding a script in `C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp` that contains some `wsl -u root ...` commands.
+
+**Add modules you need in `/etc/modules-load.d/modules.conf`**
+
+For me:
+
+```
+% cat /etc/modules-load.d/modules.conf
+# /etc/modules is obsolete and has been replaced by /etc/modules-load.d/.
+# Please see modules-load.d(5) and modprobe.d(5) for details.
+#
+# Updating this file still works, but it is undocumented and unsupported.
+usb_storage
+cdc_acm
+ch341
+usbip-core
+```
+
+**Automatically `chmod 666 /tty/...` once device connected**
+
+```
+% cat /etc/udev/rules.d/99-my.rules
+KERNEL=="ttyUSB*", ATTR{idVendor}=="1a86", ATTR{idProduct}=="7523", MODE="0666", GROUP="dialout" # CH320 Serial
+KERNEL=="ttyACM*", ATTR{idVendor}=="1a86", ATTR{idProduct}=="7523", MODE="0666", GROUP="dialout" # CH320 Serial
+KERNEL=="ttyACM*", ATTRS{idVendor}=="303a", ATTRS{idProduct}=="1001", ATTR{power/autosuspend}="-1", MODE="0666", GROUP="dialout"
+```
+
+Then I encounter a problem that `pio` can't upload image to device, highly due to the instability of USB/IP.
+
+## Back to Windows
+
+I managed to solve the [`pioarduino/platform-espressif32` is unhappy with Windows](https://github.com/pioarduino/platform-espressif32/issues/289#issuecomment-3288609760) problem.
