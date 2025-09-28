@@ -1,5 +1,5 @@
 #include "lvgl.h"
-#include "app_hal.h"
+#include "../hal/sdl2/app_hal.h"
 
 #include "demos/lv_demos.h"
 
