@@ -1,7 +1,13 @@
 #include "lvgl.h"
-#include "../hal/sdl2/app_hal.h"
-
 #include "demos/lv_demos.h"
+
+#ifdef PIO_ENV
+#if PIO_ENV == sim
+#include "../hal/sdl2/app_hal.h"
+#elif PIO_ENV == board
+#include "../hal/esp32/app_hal.h"
+#endif
+#endif
 
 #ifdef ARDUINO
 #include <Arduino.h>
