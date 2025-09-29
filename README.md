@@ -30,7 +30,9 @@ After struggly figuring out that:
 
 I decide to move everything (platformio-core, CLion, project files) into WSL2 and "remote develop" with JetBrains Gateway. Now everyone (me included) except my old laptop is happy and `platformio-core` can successfully reload config (`pio project config`, `pio project metadata`) and builds project (`pio run`). Yes, the performance of CLion under WSL2 is terrible, hope JB developers can fix the plugin issue quickly.
 
-[Let WSL2 use Windows's USB device](https://learn.microsoft.com/en-us/windows/wsl/connect-usb) is hard (as expected). I'll list all steps here for others who need:
+[Let WSL2 use Windows's USB device](https://learn.microsoft.com/en-us/windows/wsl/connect-usb) is hard (as expected).
+I'll list all steps here for others who need:
+ref: https://espeasy.readthedocs.io/en/latest/Participate/PlatformIO.html
 
 **Change `/etc/wsl.conf` to let WSL2 init with `systemd`**
 
@@ -51,22 +53,24 @@ For me:
 # Please see modules-load.d(5) and modprobe.d(5) for details.
 #
 # Updating this file still works, but it is undocumented and unsupported.
-usb_storage
-cdc_acm
-ch341
-usbip-core
+...
 ```
 
-**Automatically `chmod 666 /tty/...` once device connected**
+**Automatically `chmod 660 /tty/...` once device connected**
+
+Note that `idVendor` and `idProduct` depends on the manufacturer of usb harware on your device
 
 ```
 % cat /etc/udev/rules.d/99-my.rules
-KERNEL=="ttyUSB*", ATTR{idVendor}=="1a86", ATTR{idProduct}=="7523", MODE="0666", GROUP="dialout" # CH320 Serial
-KERNEL=="ttyACM*", ATTR{idVendor}=="1a86", ATTR{idProduct}=="7523", MODE="0666", GROUP="dialout" # CH320 Serial
-KERNEL=="ttyACM*", ATTRS{idVendor}=="303a", ATTRS{idProduct}=="1001", ATTR{power/autosuspend}="-1", MODE="0666", GROUP="dialout"
+KERNEL=="ttyUSB*", ATTR{idVendor}=="1a86", ATTR{idProduct}=="7523", MODE="0666", GROUP="dialout" 
+KERNEL=="ttyACM*", ATTR{idVendor}=="1a86", ATTR{idProduct}=="7523", MODE="0666", GROUP="dialout"
+# add yourself into dialout group
+sudo adduser $(whoami) dialout
 ```
 
-Then I encounter a problem that `pio` can't upload image to device, highly due to the instability of USB/IP.
+~~Then I encounter a problem that `pio` can't upload image to device, highly due to the instability of USB/IP.~~
+I noticed that I have some (necessary) modules not loaded on my WSL2, comparing to this tutorial: https://espeasy.readthedocs.io/en/latest/Participate/PlatformIO.html
+So the final result is unsure.
 
 ## Back to Windows
 
